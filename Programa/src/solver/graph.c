@@ -29,7 +29,7 @@ Graph *graph_init(int C, int V, int E) // O (V + E)
     return graph;
 }
 
-void graph_insert(Graph *graph, int id, int v1, int v2, int c)
+void graph_insert(Graph *graph, int id, int v1, int v2, int c) // O(1)
 {
     graph->edges[id].id = id;
     graph->edges[id].s = v1;
@@ -45,13 +45,13 @@ int edge_comparator(const void *a, const void *b)
     return edge1.c - edge2.c;
 }
 
-void graph_sort(Graph *graph)
+void graph_sort(Graph *graph) // O (E log E)
 {
     qsort((Edge *) graph->edges, graph -> e, sizeof(Edge), edge_comparator);
 }
 
 /* find the parent of a node using path compresion */
-int find(Graph *graph, int v)
+int find(Graph *graph, int v) // O (log V)
 {
     if (graph->parent[v] != v)
     {
@@ -64,7 +64,7 @@ int find(Graph *graph, int v)
  * modified slightly so that any node that's a fountain 
  * becomes the parent of the group
  */
-void merge(Graph *graph, int v1, int v2)
+void merge(Graph *graph, int v1, int v2) // O (log V)
 {
     int parent1 = find(graph, v1);
     int parent2 = find(graph, v2);
@@ -98,13 +98,13 @@ void graph_kruskal(Graph *graph)
     graph_sort(graph); // sort our edges
     FILE *output_file = fopen("result.txt", "w");
     //int mst_cost = 0;
+    int count = 0; // count the number of edges in our MST
 
     // iterate over all edges
     for (int i = 0; i < graph -> e; i++)
     {
         int v1 = graph->edges[i].s;
         int v2 = graph->edges[i].d;
-        //printf("\nedge id: %d (%d <-> %d)\n", graph->edges[i].id, v1, v2);
 
         int set1 = find(graph, v1);
         int set2 = find(graph, v2);
@@ -116,6 +116,13 @@ void graph_kruskal(Graph *graph)
         {
             //mst_cost = mst_cost + graph->edges[i].c;
             fprintf (output_file, "%d\n", graph->edges[i].id);
+            count = count + 1;
+            if (count == graph -> c) // slight optimization, we break when we've reached the MST
+            {
+                //printf("total cost: %d\n", mst_cost);
+                //printf("total edges: %d\n", count);
+                return;
+            }
             merge(graph, set1, set2);
         }
     }
@@ -124,7 +131,9 @@ void graph_kruskal(Graph *graph)
 /* Free's all the memory used in the program */
 void graph_destroy(Graph *graph)
 {
-    // TODO: free the rest of the memmory, posible helper function here
+    free(graph->edges);
+    free(graph->parent);
+    free(graph->rank);
     free(graph);
 }
 
