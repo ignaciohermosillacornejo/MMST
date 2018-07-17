@@ -97,7 +97,7 @@ void graph_kruskal(Graph *graph)
 {
     graph_sort(graph); // sort our edges
     FILE *output_file = fopen("result.txt", "w");
-    //int mst_cost = 0;
+    int mst_cost = 0;
     int count = 0; // count the number of edges in our MST
 
     // iterate over all edges
@@ -114,12 +114,12 @@ void graph_kruskal(Graph *graph)
         */
         if (set1 != set2 &&  (set1 < graph->c || set2 < graph -> c))
         {
-            //mst_cost = mst_cost + graph->edges[i].c;
+            mst_cost = mst_cost + graph->edges[i].c;
             fprintf (output_file, "%d\n", graph->edges[i].id);
             count = count + 1;
             if (count == graph -> c) // slight optimization, we break when we've reached the MST
             {
-                //printf("total cost: %d\n", mst_cost);
+                printf("total cost: %d\n", mst_cost);
                 //printf("total edges: %d\n", count);
                 return;
             }
